@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+
+         //es6函数新规则
+
+        //函数参数的默认值(与模式匹配有相同之处)
+
+                // function person1 (name,age=18){
+                //     // age = age || {} //对于没传参的状况的原始处理,但该方式忽略了0,null,false的情况
+
+                //     // 函数默认值的方式是当且仅当 没传参即undefined的情况下才会进行赋值。
+                //     console.log(name,age)
+                // }
+
+                // person1('junxing')
+                
+
+        //与结构赋值配合使用
+
+                // function fn({x,y=5}) {
+                //     console.log(arguments)
+                //     console.log(x,y)
+                // }
+                // fn({}) //{x,y=5} = {x:undefined,y:undefined}  result: x=undefined y=5
+                // fn({x:1}) // {x,y=5} = {x:1,y:undefined} result：x=1 y=5
+                // fn({x:1,y:2})  // {x,y=5} = {x:1,y:2}  result: x=1 y=2
+                // fn()  // 报错 Cannot destructure property `x` of 'undefined' or 'null'(不能解构值为undefined或null的x值)
+                // fn(1,2)  //不报错 {x,y=5} = {x:undefined,y:undefined}  result: x=undefined y=5  但实参列表可打印出1和2
+
+
+        //在形参处已提前赋值的情况
+
+            //     function f1({x=0,y=0} = {}) {
+            //         console.log(x,y)
+            //     }
+            //     function f2({x,y} = {x:0,y:0}) {
+            //         console.log(x,y)
+            //     }
+            //     f1()  //res: x=0 y=0
+            //     f2()  //res: x=0 y=0
+            //     f1({x:1,y:2})  //res: x=1 y=2
+            //     f2({x:1,y:2})  //res: x=1 y=2
+            //     f1({x:1})  //res:x=1 y=0
+            //     f1({x:1})  //res:x=1 y=undefined
+            //     //要诀：当传入一个对象时并不是对默认对象内的某一属性进行变化，而是默认对象被传入对象整体覆盖掉
+        
+
+        // //注意事项
+
+        //     function f3(x=3) {
+        //         //形参进行默认赋值等同于在当前作用域let x = 3
+
+        //         // let x = 5  //报错
+
+        //         //所以在当前作用域在通过let声明该变量的话会报错 在同一作用域let不允许重复定义变量
+        //     }
+                // function f4(x = y) {
+                //     //在这里y不作为实参存在 ，它的定义时全局的一个变量
+                //     //但全局并没有声明该变量，所以会报错
+                // }
+
+//----------------------------------------------------------------------------------------------------------
+
+        //...操作符 
+        
+            //当...[数组]时,...[数组]的值为用逗号分隔的参数序列,即等同于把数组的中括号去掉，可代替apply方法
+            
+                function arg(...arg) {
+                    console.log(...arg)
+                    console.log(arg)
+                }
+                arg(1,2,3,4,5,6)
+                arg.call(null,...[1,2,3,4,5,6])
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+        //箭头函数
+
+                var f = num => num
+
+                //1. var f 等于声明一个函数f    2.num 为该函数f的形参    3.=> num 代表返回num
+                
+                //等价函数
+                    var f = function(num){return num}
+
+                //不存在传参的情况
+                    var f = () => num
+
+                //希望返回对象的情况({})
+                    var f = name => ({name:name})
+
+                //逻辑操作
+                    var f = (a,b) => {
+                        var add = a + b
+                        return add
+                    }
+
+                //this指向：在箭头函数中，不存在this变量，在箭头函数中获得的this,实质为通过作用域一级一级往上找后，找到的全局的this,即window
+
+                //实参列表：在箭头函数中，不存在arguments,但可以通过...arg的形式代替
+
+                //嵌套的箭头函数
+                    function fn(str) {
+                        return function () {
+                            return str.split('')
+                        }
+                    }
+                    console.log(fn('123')())
+
+                    var fn1 = str => () => str.split('')
+
+                // => ()  推出形参部分等同于 推出要返回的function
+                    console.log(fn1('123')())
+    </script>
+</body>
+</html>

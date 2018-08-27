@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+
+    </style>
+</head>
+
+<body>
+
+    <script>
+        // const posts = [{
+        //         title: "Post one",
+        //         body: "this is post one"
+        //     },
+        //     {
+        //         title: "Post two",
+        //         body: "this is post two"
+        //     }
+        // ]
+
+        // function getPosts() {
+        //     let output = ''
+        //     posts.forEach((item, index) => {
+        //         output += `<li>${item.title}</li>`
+        //     })
+        //     document.body.innerHTML = output
+
+        // }
+        // // getPosts()
+        // var index = 0
+
+        // function refreshPosts(item) {
+        //     return new Promise((resolve, reject) => {
+        //         index++
+        //         setTimeout(() => {
+        //             posts.push(item)
+        //             let state;
+        //             index % 2 !== 0 ? state = false : state = true
+        //             if (state) {
+        //                 resolve()
+        //             } else {
+        //                 reject("error:something went wrong!")
+        //             }
+        //         }, 2000)
+        //     })
+        // }
+        // refreshPosts({
+        //         title: "Post three",
+        //         body: "this is post three"
+        //     }).then(getPosts)
+        //     .catch(err => console.log(err))
+        //     .then(() => {
+        //         refreshPosts({
+        //             title: "Post four",
+        //             body: "this is post four"
+        //         }).then(getPosts)
+        //     })
+        //通过new Promise生成的promise容器应该被返回，为了在异步任务成功时进行链式调用执行then
+
+        //假如异步任务失败时将会执行reject,传入reject的参数可作为错误信息被打印,
+        //属于本次任务的then将不被执行，同时假如设置了catch的话，传入catch的回调将被执行
+
+        //无论是执行了then还是执行了catch,promise对象都会被再次返回,且可以再次执行then
+
+        const promise1 = Promise.resolve("hello world")
+        const promise2 = Promise.resolve("yangjunxing")
+        const promise3 = new Promise((resolve, reject) => {
+            setTimeout(resolve, 2000, "goodbye")
+        })
+
+
+        Promise.all([promise1, promise2, promise3]).then(values => {
+            console.log(values)
+            // Promise.resolve(values).then(values => {
+            //     console.log(values, 'resolve')
+            // })
+            // Promise.reject(values).catch(values => {
+            //     console.log(values, 'reject')
+            // })
+        })
+        //Promise.all规定传入数组内的所有任务全部执行成功，才触发then,只要有一个不成功，都会触发catch
+        //需要注意的是Promise构造函数可以直接调用reject或resolve,返回一个Promise对象，该返回的Promise对象
+        //与 new Promise(fn)时所返回的对象一样，只不过new Promise(fn)所返回的对象其状态属性[[PromiseStatus]] 为 pending 
+        //而调用reject或resolve时，返回的Promise状态为reject或resolve，相对应地假如想进行链式调用，应该分别通过then或catch
+
+
+        // const getData = fetch("https://jsonplaceholder.typicode.com/posts")
+        //     .then(res => {
+        //         console.log(res)
+        //         return res.json()
+        //     })
+        //     .then(data => {
+        //         console.log(data)
+        //     })
+        //https://developer.mozilla.org/zh-CN/docs/Web/API/Fetch_API
+
+        //async / await (es7)
+        async function fetchUsers() {
+
+            const res = await fetch("https://jsonplaceholder.typicode.com/posts"); //执行完毕后再执行下面往后代码
+            const data = await res.json() //执行完毕后再执行往后代码
+            console.log(data)
+        }
+        fetchUsers()
+        console.log(123456)
+        //async触使fetchUsers为一个异步操作，不会阻塞页面
+        //await类似于让异步操作强制代码同步操作，阻塞往后的代码
+        //await必须包裹于async内
+    </script>
+
+</body>
+
+</html>

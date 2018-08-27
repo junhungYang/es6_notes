@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        //属性的简洁表示以及属性名表达式
+
+            //当属姓名与变量名相同时，可使用属性的简洁表示,同时当一个属性只存在属性名时，可以理解为，它的值的变量名与其同名
+
+                var foo = '123';
+                var obj = {foo:foo} 
+                var obj = {foo}
+
+            //方法属性的简写
+
+                var obj1 = {
+                    add: function(a,b) {return a + b},  //原始模式
+                    add1 (a,b) {return a + b}  //简写模式
+                }
+            
+            //属性名表达式
+                
+                var obj = {}
+                obj.name = "xm";    //es5.0之前
+                obj['a' + 'ge'] = 18   //es5.0之前
+                
+                var name = 'name'; var age = 'age';
+                var obj = {
+                    [name] : 'xm',
+                    [age] : 18 
+                }                 
+                //es6.0允许写法，需要注意的是不能出现 obj = {[name]} 的情况, 可写成 obj={[name]:name}
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------
+        //属性的可枚举性，以及属性的遍历
+
+            //在js中，对象的属性分为可枚举和不可枚举，它们是由属性的enumerable值决定的，
+            //不可枚举属性，用for...in是遍历不到的，js中内置属性是遍历不到的。
+
+            //Object.getOwnPropertyDescriptor
+                var obj = {}
+                obj.toString = Object.prototype.toString
+                Object.getOwnPropertyDescriptor(obj,'toString').enumerable  //返回true,可通过for  in枚举
+                Object.getOwnPropertyDescriptor(Object.prototype,'toString').enumerable  //返回false,内置属性不可通过for in枚举
+
+                var b = {a:1,b:2,c:3}
+                // console.log(Object.keys(b)) //只能获得自身属性
+                // console.log(JSON.stringify(b)) //获得自身属性，但不包括值为function类型的属性
+
+
+            //defineProperty与getOwnPropertyNames
+
+                //defineProperty可以设置一个属性的可枚举性
+                    Object.defineProperty(b,'age',{
+                        value:18,
+                        enumerable:false,  
+                        // enumerable:true
+                    })
+                
+                    for(var prop in b) {
+                        // console.log(b[prop]) 
+                        
+                        //enumerable:false，age属性无法通过for in遍历出来
+                        //enumerable:true，age属性可以通过for in遍历出来
+                    }
+
+                //getOwnPropertyNames无论该属性是否可被枚举，属性名都可以遍历出来，并以数组形式返回
+                    // console.log(Object.getOwnPropertyNames(b))
+                    
+                //propertyIsEnumerable判断该属性是否可枚举
+                    // console.log(b.propertyIsEnumerable('age'))
+
+            //Object.is 判断两个对象是否为同一个对象(允许包装类)
+                
+                // console.log(Object.is(123,123))  //true  由两个相等原始值返回的包装类对象为同一个
+                
+                // console.log(Object.is({x:1},{x:1})) //false
+
+                // console.log(Object.is(NaN,NaN))  // true NaN虽然不等于NaN  但他们的包装类是相同的
+
+                // console.log(Object.is(+0,-0))  // false
+
+            //Object.assign  可讲若干个对象中的可枚举属性复制至另一对象中
+
+                var a = {}
+                var a1 = {name:'xm'}
+                var a2 = {age:18}
+                Object.defineProperty(a2,'sex',{
+                    value:'male',
+                    enumerable:false,  
+                }) 
+                var a3 = Object.assign(a,a1,a2) //{name: "xm", age: 18} 不存在深克隆
+                var num = Object.assign(2) // 发生隐式类型转换  返回数字类型的{2}，除了null与undefined以外都可隐式类型转换
+
+
+        //对象的拓展运算符
+                var {c,d,...e} = {c:1,d:2,e:3,f:4,g:5}
+                // console.log(c,d,e)
+
+                //原理 ...e = ...{e:3,f:4,g:5} = e:3,f:4,g:5 所以 e = {e:3,f:4,g:5}
+
+            //活用: 合并对象
+                
+                var c = {name:'xm'}
+                var d = {age:18}
+                var e = {...c,...d}
+                // console.log(e)
+
+                let merge = (...sources) => {
+
+                    //当以一个对象{a:1,b:2}作为...sources的值时,...sources = {a:1,b:2},
+                    //逆向思维...会把一个数组的[]或一个对象的{}扒开, {{}}的形式在js中并不存在，所以sources = [{a:1,b:2}]
+
+                    //当以 a:1,b:2 作为...sources的值使, ...sources = a:1,b:2,所以 sources = {a:1,b:2}
+                    //但鉴于无法以merge(a:1,b:2)的形式进行传参，所以实际上在这个函数中的对象拓展运算符并不是它的本意
+                    
+                    Object.assign({},...sources);
+                }
+                merge({a:1,b:2})
+                // console.log(Object.assign({},sources))    
+
+            //Object.keys(obj); Object.values(obj); Object.entries(obj)
+
+                //用法与原理与 Array.entries() Array.keys() Array.values() 相同
+                //只是Array系列的该方法返回迭代器，但Object系列的该方法返回数组
+                var z = {
+                    a:1,
+                    b:2,
+                    c:3
+                }
+                var keys = Object.keys(z)  // ["a", "b", "c"]
+                var values = Object.values(z)  // [1, 2, 3]
+                var entries = Object.entries(z) // [["a", 1],["b", 2],["c", 3]]
+    </script>
+</body>
+</html>
